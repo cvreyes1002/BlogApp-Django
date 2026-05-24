@@ -12,11 +12,9 @@ from .forms import RegisterForm
 def index(request):
 
     if request.method == "POST":
-        print("Received POST request with data:", request.POST)
         form = RegisterForm(request.POST)
 
         if form.is_valid():
-            print(f"Form is Valid - {form.cleaned_data}")
             # username = form.cleaned_data["username"]
             # email = form.cleaned_data["email"]
             # password = form.cleaned_data["password"]
@@ -33,7 +31,6 @@ def index(request):
             form.save()
             return HttpResponseRedirect("/register")
         else:
-            print(f"Form is Invalid - {form.errors}")
             return render(request, "blog/index.html", {
                 "form": form
             })
