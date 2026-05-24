@@ -2,6 +2,8 @@ from urllib import request
 
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
+from django.contrib.auth.hashers import make_password, check_password
+
 
 # from .models import User (Not needed since we are using a ModelForm)
 from .forms import RegisterForm
@@ -28,7 +30,12 @@ def index(request):
 
             # new_user = User(name=username, email=email, password=password)
             # new_user.save()
-            form.save()
+
+            user = form.save(commit=False)
+
+            # Hashing
+            user.password = make_password(form.cleaned_data["password"])
+            user.save()
             return HttpResponseRedirect("/register")
         else:
             return render(request, "blog/index.html", {
