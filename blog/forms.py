@@ -1,20 +1,34 @@
 from django import forms
 
-# from .models import user
+from .models import User
 
-class RegisterForm(forms.Form):
-    username = forms.CharField(widget=forms.TextInput(attrs={
-        "placeholder": "Pick a username",
-        "class": 'form-control',
-        "autocomplete": 'off',
-        })
-    )
-    email = forms.EmailField(widget=forms.EmailInput(attrs={
-        "placeholder": "Enter your email",
-        "class": 'form-control',
-        "autocomplete": 'off',
-        })
-    )
+# class RegisterForm(forms.Form):
+#     username = forms.CharField(widget=forms.TextInput(attrs={
+#         "placeholder": "Pick a username",
+#         "class": 'form-control',
+#         "autocomplete": 'off',
+#         })
+#     )
+#     email = forms.EmailField(widget=forms.EmailInput(attrs={
+#         "placeholder": "Enter your email",
+#         "class": 'form-control',
+#         "autocomplete": 'off',
+#         })
+#     )
+#     password = forms.CharField(widget=forms.PasswordInput(attrs={
+#         "placeholder": "Create a password",
+#         "class": 'form-control',
+#         "autocomplete": 'off',
+#         })
+#     )
+#     confirm_password = forms.CharField(widget=forms.PasswordInput(attrs={
+#         "placeholder": "Confirm your password",
+#         "class": 'form-control',
+#         "autocomplete": 'off',
+#         })
+#     )
+
+class RegisterForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput(attrs={
         "placeholder": "Create a password",
         "class": 'form-control',
@@ -28,9 +42,44 @@ class RegisterForm(forms.Form):
         })
     )
 
+    class Meta:
+        model = User
+        fields = ['name', 'email', 'password']
+        widgets = {
+            'name': forms.TextInput(attrs={
+                "placeholder": "Pick a username",
+                "class": 'form-control',
+                "autocomplete": 'off',
+            }),
+            'email': forms.EmailInput(attrs={
+                "placeholder": "Enter your email",
+                "class": 'form-control',
+                "autocomplete": 'off',
+            }),
+            # 'password': forms.PasswordInput(attrs={
+            #     "placeholder": "Create a password",
+            #     "class": 'form-control',
+            #     "autocomplete": 'off',
+            # }),
+            }
+        labels = {
+            'name': 'Username',
+            'email': 'Email',
+            'password': 'Password',
+            }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        password = cleaned_data.get("password")
+        confirm_password = cleaned_data.get("confirm_password")
+
+        if password and confirm_password and password != confirm_password:
+            raise forms.ValidationError("Passwords do not match.")
+        return cleaned_data
+
 
 ####################
-# Using ModelForm instead of Form
+# Using ModelForm instead of Form (Created by AI)
 ####################
 # class UserForm(forms.ModelForm):
 #     # confirm_password = forms.CharField(max_length=100, widget=forms.PasswordInput)
